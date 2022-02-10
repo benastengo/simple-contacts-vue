@@ -6,6 +6,7 @@ export default {
       message: "Welcome to Vue.js!",
       contacts: [],
       newContacts: {},
+      currentContact: {},
     };
   },
   created: function () {
@@ -30,6 +31,10 @@ export default {
           console.log(error.response);
         });
     },
+    showContact: function (contact) {
+      this.currentContact = contact;
+      document.querySelector("#Contact-details").showModal();
+    },
   },
 };
 </script>
@@ -53,7 +58,19 @@ export default {
     <h1>All Contacts</h1>
     <div v-for="contact in contacts" v-bind:key="contact.id">
       <h2>{{ contact.first_name }}</h2>
+      <button v-on:click="showContact(contact)">Show Contact Info</button>
     </div>
+    <dialog id="Contact-details">
+      <form method="dialog">
+        <h1>Contact Info</h1>
+        <p>First Name: {{ currentContact.first_name }}</p>
+        <p>Last Name: {{ currentContact.last_name }}</p>
+        <p>Email: {{ currentContact.email }}</p>
+        <p>Phone Number: {{ currentContact.phone_number }}</p>
+        <p>Image: {{ currentContact.image }}</p>
+        <button>CLOSE</button>
+      </form>
+    </dialog>
   </div>
 </template>
 
