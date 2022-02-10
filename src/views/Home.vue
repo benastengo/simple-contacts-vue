@@ -3,9 +3,9 @@ import axios from "axios";
 export default {
   data: function () {
     return {
-      message: "Welcome to Vue.js!",
       contacts: [],
       newContacts: {},
+      editContact: {},
       currentContact: {},
     };
   },
@@ -33,7 +33,28 @@ export default {
     },
     showContact: function (contact) {
       this.currentContact = contact;
+      this.editContact = contact;
       document.querySelector("#Contact-details").showModal();
+    },
+    updateContacts: function (contact) {
+      axios
+        .patch(`http://localhost:3000/contacts/${contact.id}`, this.editContact)
+        .then((response) => {
+          console.log("Contact Update", response);
+          this.currentContact = {};
+        })
+        .catch((error) => {
+          console.log("Contact Update Error", error.response);
+        });
+    },
+    destroyContact: function (contact) {
+      if (confirm("Are you sure you want to delete this person?")) {
+        axios.delete(`http://localhost:3000/contacts/${contact.id}`).then((response) => {
+          console.log("RIPPPPPP", response.data);
+          var index = this.contacts.indexOf(contact);
+          this.contacts.splice(index, 1);
+        });
+      }
     },
   },
 };
@@ -63,11 +84,28 @@ export default {
     <dialog id="Contact-details">
       <form method="dialog">
         <h1>Contact Info</h1>
-        <p>First Name: {{ currentContact.first_name }}</p>
-        <p>Last Name: {{ currentContact.last_name }}</p>
-        <p>Email: {{ currentContact.email }}</p>
-        <p>Phone Number: {{ currentContact.phone_number }}</p>
-        <p>Image: {{ currentContact.image }}</p>
+        <p>
+          First Name:
+          <input type="text" v-model="editContact.first_name" />
+        </p>
+        <p>
+          Last Name:
+          <input type="text" v-model="editContact.last_name" />
+        </p>
+        <p>
+          Email:
+          <input type="text" v-model="editContact.email" />
+        </p>
+        <p>
+          Phone Number:
+          <input type="text" v-model="editContact.phone_number" />
+        </p>
+        <p>
+          Image:
+          <input type="text" v-model="editContact.image" />
+        </p>
+        <button v-on:click="updateContacts(currentContact)">Update</button>
+        <button v-on:click="destroyContact(currentContact)">KILLLLLLL</button>
         <button>CLOSE</button>
       </form>
     </dialog>
